@@ -1,78 +1,108 @@
-package com.example.myschool.screens
+package com.example.schoolapp
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 
+data class AttendanceStudent(
+    val name: String,
+    val enrollmentNumber: String,
+    val presentPercentage: Float // between 0f and 100f
+)
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AttendanceScreen(navController: NavController) {
-    val students = listOf(
-        "John Doe", "Emma Watson", "Liam Brown", "Sophia Lee", "Oliver Smith",
-        "Ava Martinez", "Noah Johnson", "Isabella Garcia", "Mason Wilson", "Mia Anderson",
-        "James Thompson", "Charlotte White", "Benjamin Harris", "Amelia Martin", "Elijah Clark",
-        "Lucas Walker", "Harper Young", "Ethan Hall", "Scarlett Allen", "Alexander King"
+
+    // 1st Year
+    val firstYearAttendance = listOf(
+        AttendanceStudent("Aniket Raut", "224101", 90f),
+        AttendanceStudent("Om Solanke", "224102", 88f),
+        AttendanceStudent("Devraj Kadam", "224103", 95f),
+        AttendanceStudent("Atharva Nikam", "224104", 75f),
+        AttendanceStudent("Onkar Wayse", "224105", 85f),
+        AttendanceStudent("Om Gaikwad", "224106", 80f),
+        AttendanceStudent("Yash Patil", "224107", 92f),
+        AttendanceStudent("Yashraj Waghmare", "224108", 87f),
+        AttendanceStudent("Sumit Pawar", "224109", 93f),
+        AttendanceStudent("Rutik Gaikwad", "224110", 89f),
+        AttendanceStudent("Ajay Chavan", "224111", 91f)
     )
 
-    val attendanceStatus = remember { mutableStateMapOf<String, String>() }
+    // 2nd Year
+    val secondYearAttendance = listOf(
+        AttendanceStudent("Swapnil Pawar", "224112", 86f),
+        AttendanceStudent("Sayali Pawar", "224113", 84f),
+        AttendanceStudent("Rutuja Nikam", "224114", 90f),
+        AttendanceStudent("Pratiksha Pawar", "224115", 78f),
+        AttendanceStudent("Snehal Pawar", "224116", 82f),
+        AttendanceStudent("Shraddha Gaikwad", "224117", 85f),
+        AttendanceStudent("Anuja Gaikwad", "224118", 88f),
+        AttendanceStudent("Payal Pawar", "224119", 89f),
+        AttendanceStudent("Aarti Nikam", "224120", 80f),
+        AttendanceStudent("Pooja Pawar", "224121", 91f),
+        AttendanceStudent("Tejal Chavan", "224122", 79f)
+    )
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Attendance") },
-                navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
-                    }
-                }
+    var selectedYear by remember { mutableStateOf("1st Year") }
+    val yearOptions = listOf("1st Year", "2nd Year")
+
+    Column(modifier = Modifier
+        .fillMaxSize()
+        .padding(16.dp)) {
+
+        var expanded by remember { mutableStateOf(false) }
+
+        ExposedDropdownMenuBox(
+            expanded = expanded,
+            onExpandedChange = { expanded = !expanded }
+        ) {
+            TextField(
+                readOnly = true,
+                value = selectedYear,
+                onValueChange = {},
+                label = { Text("Select Year") },
+                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
+                modifier = Modifier.menuAnchor().fillMaxWidth()
             )
-        },
-        bottomBar = {
-            Button(
-                onClick = { println("Attendance saved: $attendanceStatus") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
+
+            ExposedDropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
             ) {
-                Text("Save")
+                yearOptions.forEach { year ->
+                    DropdownMenuItem(
+                        text = { Text(year) },
+                        onClick = {
+                            selectedYear = year
+                            expanded = false
+                        }
+                    )
+                }
             }
         }
-    ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-        ) {
-            Text(text = "Mark Attendance", style = MaterialTheme.typography.headlineSmall, modifier = Modifier.padding(16.dp))
-            LazyColumn(
-                modifier = Modifier.weight(1f)
-            ) {
-                items(students) { student ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 4.dp, horizontal = 16.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(text = student, modifier = Modifier.weight(1f))
-                        Row {
-                            listOf("Present", "Absent").forEach { status ->
-                                RadioButton(
-                                    selected = attendanceStatus[student] == status,
-                                    onClick = { attendanceStatus[student] = status }
-                                )
-                                Text(text = status)
-                            }
-                        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        val studentsToShow = if (selectedYear == "1st Year") firstYearAttendance else secondYearAttendance
+
+        LazyColumn {
+            items(studentsToShow) { student ->
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text("Name: ${student.name}", style = MaterialTheme.typography.titleMedium)
+                        Text("Enrollment No: ${student.enrollmentNumber}")
+                        Text("Attendance: ${student.presentPercentage}%", style = MaterialTheme.typography.bodyMedium)
                     }
                 }
             }
