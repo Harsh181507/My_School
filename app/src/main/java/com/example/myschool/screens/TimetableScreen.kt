@@ -2,7 +2,8 @@ package com.example.myschool.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
@@ -12,90 +13,96 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.compose.material3.TextFieldDefaults
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TimetableScreen(navController: NavController) {
-    val daysOfWeek = listOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday")
-    val subjects = listOf(
-        "Math", "Science", "History", "English", "Physics", "Chemistry",
-        "Biology", "Computer Science", "Economics", "P.E."
+    val timetable = mapOf(
+        "Monday" to listOf(
+            "09:00-10:00 → DCS [PVD]",
+            "10:00-11:00 → CEL [  ]",
+            "11:00-12:00 → MAA [PRV]",
+            "12:00-12:45 → LUNCH BREAK",
+            "12:45-02:45 → S1- BPE [KBJ], S2- MAA [PRV], S3- DCS [PVD]",
+            "03:00-05:00 → S1- MEE [PSM], S2- CEL [  ], S3- MEE [PRV]"
+        ),
+        "Tuesday" to listOf(
+            "09:00-10:00 → GFM",
+            "10:00-11:00 → EES [RRM]",
+            "11:00-12:00 → BPE [KBJ]",
+            "12:00-12:45 → LUNCH BREAK",
+            "12:45-02:45 → MAA [PRV], DCS [PVD]",
+            "03:00-05:00 → S1- MAA [PRV], S2- BPE [KBJ], S3- CEL [  ]"
+        ),
+        "Wednesday" to listOf(
+            "10:00-12:00 → S1- DCS [PVD], S2- MEE [PRV], S3- BPE [KBJ]",
+            "12:00-12:45 → LUNCH BREAK",
+            "12:45-02:45 → S1- MEE [PSM], S2- DCS [PVD], S3- MAA [PRV]",
+            "03:00-04:00 → DCS [PVD]",
+            "04:00-05:00 → EES [RRM]"
+        ),
+        "Thursday" to listOf(
+            "10:00-12:00 → S1- DCS [PVD], S2- CEL [  ], S3- MEE [PRV]",
+            "12:00-12:45 → LUNCH BREAK",
+            "12:45-02:45 → S1- CEL [  ], S2- MEE [PSM], S3- MAA [PRV]",
+            "03:00-04:00 → CEL [  ]",
+            "04:00-05:00 → BPE [KBJ]"
+        ),
+        "Friday" to listOf(
+            "10:00-12:00 → S1- CEL [  ], S2- MAA [PRV], S3- DCS [PVD]",
+            "12:00-12:45 → LUNCH BREAK",
+            "12:45-02:45 → S1- MAA [PRV], S2- DCS [PVD], S3- CEL [  ]",
+            "03:00-04:00 → DVS [PVD]",
+            "04:00-05:00 → BPE [KBJ]"
+        ),
+        "Saturday" to listOf(
+            "10:00-11:00 → MAA [PRV]",
+            "11:00-12:00 → CEL [  ]",
+            "12:45-01:45 → BPE [KBJ]",
+            "01:45-02:45 → MAA [PRV]",
+            "03:00-04:00 → CEL [  ]",
+            "04:00-05:00 → BPE [KBJ]"
+        )
     )
 
-    val timeTable = remember {
-        daysOfWeek.associateWith { List(8) { subjects.random() } }
-    }
-
+    val daysOfWeek = timetable.keys.toList()
     var selectedDay by remember { mutableStateOf(daysOfWeek.first()) }
     var expanded by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = {
-                    Text("Timetable", color = Color.White)
-                },
+                title = { Text("Class Timetable") },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.White)
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
                     }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Black)
+                }
             )
-        },
-        containerColor = Color.White
+        }
     ) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .padding(16.dp),
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(16.dp)
         ) {
-            Text(
-                text = "Select Day",
-                style = MaterialTheme.typography.titleMedium.copy(
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Black
-                ),
-                modifier = Modifier.align(Alignment.Start)
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // Dropdown
+            // Day selection dropdown
             ExposedDropdownMenuBox(
                 expanded = expanded,
-                onExpandedChange = { expanded = !expanded },
-                modifier = Modifier.fillMaxWidth().background(Color.White)
+                onExpandedChange = { expanded = !expanded }
             ) {
-                TextField(
+                OutlinedTextField(
                     value = selectedDay,
                     onValueChange = {},
                     readOnly = true,
-                    label = { Text("Day") },
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = Color.White,
-                        unfocusedContainerColor = Color.White,
-                        disabledContainerColor = Color.White,
-                        focusedTextColor = Color.Black,
-                        unfocusedTextColor = Color.Black,
-                        disabledTextColor = Color.Black
-                    ),
-                    trailingIcon = {
-                        ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
-                    },
+                    label = { Text("Select Day") },
                     modifier = Modifier
                         .menuAnchor()
                         .fillMaxWidth()
                 )
-
-
-
                 ExposedDropdownMenu(
                     expanded = expanded,
                     onDismissRequest = { expanded = false }
@@ -112,33 +119,24 @@ fun TimetableScreen(navController: NavController) {
                 }
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-            // Card for selected day
-            Card(
-                shape = RoundedCornerShape(12.dp),
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(containerColor = Color(0xFF101010))
-            ) {
-                Column(modifier = Modifier.padding(20.dp)) {
-                    Text(
-                        text = "$selectedDay's Classes",
-                        style = MaterialTheme.typography.titleLarge.copy(
-                            color = Color.White,
-                            fontWeight = FontWeight.SemiBold
-                        )
-                    )
-
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    timeTable[selectedDay]?.forEachIndexed { index, subject ->
-                        Text(
-                            text = "${index + 1}. $subject",
-                            style = MaterialTheme.typography.bodyLarge.copy(
-                                color = Color.White
-                            ),
-                            modifier = Modifier.padding(vertical = 4.dp)
-                        )
+            // Display selected day's routine
+            timetable[selectedDay]?.let { sessions ->
+                LazyColumn {
+                    items(sessions) { session ->
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 4.dp),
+                            colors = CardDefaults.cardColors()
+                        ) {
+                            Text(
+                                text = session,
+                                modifier = Modifier.padding(16.dp),
+                                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium)
+                            )
+                        }
                     }
                 }
             }
