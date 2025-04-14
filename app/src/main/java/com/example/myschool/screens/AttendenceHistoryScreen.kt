@@ -1,110 +1,174 @@
 package com.example.myschool.screens
 
+import android.graphics.Color
+import android.widget.LinearLayout
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavController
+import com.github.mikephil.charting.charts.BarChart
+import com.github.mikephil.charting.components.Description
+import com.github.mikephil.charting.data.BarData
+import com.github.mikephil.charting.data.BarDataSet
+import com.github.mikephil.charting.data.BarEntry
 import kotlin.random.Random
 
 data class Student(
     val name: String,
-    val attendance: String
+    val attendance: Map<String, Int> // month to attendance percent
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AttendanceHistoryScreen(navController: NavController) {
-
-    // 1st Year Students
-    val firstYearStudents = listOf(
-        Student("Aniket Raut", "${Random.nextInt(70, 100)}%"),
-        Student("Om Solanke", "${Random.nextInt(70, 100)}%"),
-        Student("Devraj Kadam", "${Random.nextInt(70, 100)}%"),
-        Student("Atharva Nikam", "${Random.nextInt(70, 100)}%"),
-        Student("Onkar Wayse", "${Random.nextInt(70, 100)}%"),
-        Student("Om Gaikwad", "${Random.nextInt(70, 100)}%"),
-        Student("Yash Patil", "${Random.nextInt(70, 100)}%"),
-        Student("Yashraj Waghmare", "${Random.nextInt(70, 100)}%"),
-        Student("Sumit Pawar", "${Random.nextInt(70, 100)}%"),
-        Student("Rutik Gaikwad", "${Random.nextInt(70, 100)}%"),
-        Student("Ajay Chavan", "${Random.nextInt(70, 100)}%")
+    val months = listOf(
+        "January", "February", "March", "April",
+        "May", "June", "July", "August", "September",
+        "October", "November", "December"
     )
-
-    // 2nd Year Students
-    val secondYearStudents = listOf(
-        Student("Swapnil Pawar", "${Random.nextInt(70, 100)}%"),
-        Student("Sayali Pawar", "${Random.nextInt(70, 100)}%"),
-        Student("Rutuja Nikam", "${Random.nextInt(70, 100)}%"),
-        Student("Pratiksha Pawar", "${Random.nextInt(70, 100)}%"),
-        Student("Snehal Pawar", "${Random.nextInt(70, 100)}%"),
-        Student("Shraddha Gaikwad", "${Random.nextInt(70, 100)}%"),
-        Student("Anuja Gaikwad", "${Random.nextInt(70, 100)}%"),
-        Student("Payal Pawar", "${Random.nextInt(70, 100)}%"),
-        Student("Aarti Nikam", "${Random.nextInt(70, 100)}%"),
-        Student("Pooja Pawar", "${Random.nextInt(70, 100)}%"),
-        Student("Tejal Chavan", "${Random.nextInt(70, 100)}%")
-    )
+    val yearOptions = listOf("1st Year", "2nd Year")
 
     var selectedYear by remember { mutableStateOf("1st Year") }
-    val yearOptions = listOf("1st Year", "2nd Year")
+    var selectedMonth by remember { mutableStateOf("January") }
+
+    // Generates attendance for all months, with April and May set to 0
+    fun generateAttendance(): Map<String, Int> {
+        return months.associateWith { month ->
+            if (month == "April" || month == "May" || month=="June" || month=="July" || month=="August" || month=="September" || month=="October" || month=="November" || month=="December" ) 0 else Random.nextInt(70, 100)
+        }
+    }
+
+    // 1st Year Students
+    val firstYearStudents = remember {
+        listOf(
+            "Aniket Raut", "Om Solanke", "Devraj Kadam", "Atharva Nikam", "Onkar Wayse",
+            "Om Gaikwad", "Yash Patil", "Yashraj Waghmare", "Sumit Pawar", "Rutik Gaikwad", "Ajay Chavan"
+        ).map { Student(it, generateAttendance()) }
+    }
+
+    // 2nd Year Students
+    val secondYearStudents = remember {
+        listOf(
+            "Swapnil Pawar", "Sayali Pawar", "Rutuja Nikam", "Pratiksha Pawar", "Snehal Pawar",
+            "Shraddha Gaikwad", "Anuja Gaikwad", "Payal Pawar", "Aarti Nikam", "Pooja Pawar", "Tejal Chavan"
+        ).map { Student(it, generateAttendance()) }
+    }
+
+    val studentsToShow = if (selectedYear == "1st Year") firstYearStudents else secondYearStudents
+    val attendanceForGraph = studentsToShow.mapIndexed { index, student ->
+        BarEntry(index.toFloat(), student.attendance[selectedMonth]?.toFloat() ?: 0f)
+    }
 
     Column(modifier = Modifier
         .fillMaxSize()
         .padding(16.dp)) {
 
-        // Dropdown for year selection
-        var expanded by remember { mutableStateOf(false) }
+        // Dropdown for Year
+        DropdownSelector(
+            label = "Select Year",
+            options = yearOptions,
+            selectedOption = selectedYear,
+            onOptionSelected = { selectedYear = it }
+        )
 
-        ExposedDropdownMenuBox(
-            expanded = expanded,
-            onExpandedChange = { expanded = !expanded }
-        ) {
-            TextField(
-                readOnly = true,
-                value = selectedYear,
-                onValueChange = {},
-                label = { Text("Select Year") },
-                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
-                modifier = Modifier.menuAnchor().fillMaxWidth()
-            )
+        Spacer(modifier = Modifier.height(8.dp))
 
-            ExposedDropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false }
-            ) {
-                yearOptions.forEach { year ->
-                    DropdownMenuItem(
-                        text = { Text(year) },
-                        onClick = {
-                            selectedYear = year
-                            expanded = false
-                        }
-                    )
-                }
-            }
-        }
+        // Dropdown for Month
+        DropdownSelector(
+            label = "Select Month",
+            options = months,
+            selectedOption = selectedMonth,
+            onOptionSelected = { selectedMonth = it }
+        )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        val studentsToShow = if (selectedYear == "1st Year") firstYearStudents else secondYearStudents
+        Text("Attendance Graph", style = MaterialTheme.typography.titleMedium)
+
+        AndroidView(
+            factory = { context ->
+                BarChart(context).apply {
+                    layoutParams = LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        600
+                    )
+                    description = Description().apply { text = "Attendance (%)" }
+                    axisRight.isEnabled = false
+                    setFitBars(true)
+                }
+            },
+            update = { chart ->
+                val dataSet = BarDataSet(attendanceForGraph, "Attendance").apply {
+                    color = Color.BLUE
+                    valueTextColor = Color.BLACK
+                    valueTextSize = 12f
+                }
+                chart.data = BarData(dataSet)
+                chart.invalidate()
+            }
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
 
         LazyColumn {
             items(studentsToShow) { student ->
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 8.dp),
+                        .padding(vertical = 6.dp),
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Text("Name: ${student.name}", style = MaterialTheme.typography.titleMedium)
-                        Text("Attendance: ${student.attendance}")
+                        Text("Attendance in $selectedMonth: ${student.attendance[selectedMonth]}%")
                     }
                 }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DropdownSelector(
+    label: String,
+    options: List<String>,
+    selectedOption: String,
+    onOptionSelected: (String) -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    ExposedDropdownMenuBox(
+        expanded = expanded,
+        onExpandedChange = { expanded = !expanded }
+    ) {
+        TextField(
+            readOnly = true,
+            value = selectedOption,
+            onValueChange = {},
+            label = { Text(label) },
+            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
+            modifier = Modifier.menuAnchor().fillMaxWidth()
+        )
+
+        ExposedDropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            options.forEach { option ->
+                DropdownMenuItem(
+                    text = { Text(option) },
+                    onClick = {
+                        onOptionSelected(option)
+                        expanded = false
+                    }
+                )
             }
         }
     }

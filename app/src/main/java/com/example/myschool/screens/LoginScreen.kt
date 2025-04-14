@@ -41,7 +41,7 @@ fun LoginScreen(navController: NavController) {
             verticalArrangement = Arrangement.Center
         ) {
             Text(
-                text = "Welcome to MY SCHOOL",
+                text = "Welcome to MY COLLEGE",
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary
@@ -96,7 +96,7 @@ fun LoginScreen(navController: NavController) {
 
             Button(
                 onClick = {
-                    if (username == "School" && password == "Win@123") {
+                    if (username == "Admin" && password == "Pass@123") {
                         navController.navigate("dashboard")
                     } else {
                         scope.launch {

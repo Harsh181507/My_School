@@ -75,6 +75,15 @@ dependencies {
     implementation ("androidx.compose.material3:material3:1.2.0")
 // Tooling (Optional but helpful for previews)
     implementation ("androidx.compose.ui:ui-tooling-preview:1.6.1")
+    implementation ("com.patrykandpatrick.vico:core:1.12.0")
+    implementation ("com.patrykandpatrick.vico:compose:1.12.0")
+    implementation ("com.patrykandpatrick.vico:compose-m3:1.13.0")
+    implementation ("com.patrykandpatrick.vico:compose:1.13.0")
+    implementation ("com.patrykandpatrick.vico:core:1.13.0")
+    implementation ("com.patrykandpatrick.vico:compose-m3:1.13.0")
+    implementation ("com.github.PhilJay:MPAndroidChart:v3.1.0")
+
+
 
 
 }

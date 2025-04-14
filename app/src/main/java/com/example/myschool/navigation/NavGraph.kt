@@ -5,9 +5,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.myschool.screens.*
-import com.example.myschool.screens.AttendanceScreen
 import com.example.myschool.screens.TimetableScreen
-import com.example.schoolapp.AttendanceScreen
+
 import com.example.schoolapp.StudentListScreen
 
 
