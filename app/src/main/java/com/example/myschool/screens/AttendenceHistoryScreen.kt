@@ -32,7 +32,7 @@ fun AttendanceHistoryScreen(navController: NavController) {
         "May", "June", "July", "August", "September",
         "October", "November", "December"
     )
-    val yearOptions = listOf("1st Year", "2nd Year")
+    val yearOptions = listOf("1st Year", "2nd Year", "3rd Year")
 
     var selectedYear by remember { mutableStateOf("1st Year") }
     var selectedMonth by remember { mutableStateOf("January") }
@@ -40,23 +40,113 @@ fun AttendanceHistoryScreen(navController: NavController) {
     // Generates attendance for all months, with April and May set to 0
     fun generateAttendance(): Map<String, Int> {
         return months.associateWith { month ->
-            if (month == "April" || month == "May" || month=="June" || month=="July" || month=="August" || month=="September" || month=="October" || month=="November" || month=="December" ) 0 else Random.nextInt(70, 100)
+            if (month == "April" || month == "May" || month == "June" || month == "July" || month == "August" || month == "September" || month == "October" || month == "November" || month == "December") 0 else Random.nextInt(
+                70,
+                100
+            )
         }
     }
 
     // 1st Year Students
     val firstYearStudents = remember {
         listOf(
-            "Aniket Raut", "Om Solanke", "Devraj Kadam", "Atharva Nikam", "Onkar Wayse",
-            "Om Gaikwad", "Yash Patil", "Yashraj Waghmare", "Sumit Pawar", "Rutik Gaikwad", "Ajay Chavan"
+            "Aniket Raut",
+            "Om Solanke",
+            "Devraj Kadam",
+            "Atharva Nikam",
+            "Onkar Wayse",
+            "Om Gaikwad",
+            "Yash Patil",
+            "Yashraj Waghmare",
+            "Sumit Pawar",
+            "Rutik Gaikwad",
+            "Ajay Chavan",
+            "SONAWANE ARTI DEEPAK",
+            "SUDAKE TEJASHRI MAHADEV",
+            "SUTAR SONALI BHAUSAHEB",
+            "THONGE YASHRAJ YUVRAJ",
+            "WAGHMARE OMKAR VISHWANATH",
+            "WAGHMARE YASH NANDKUMAR",
+            "WARE GAYATRI VASUDEV",
+            "WAYKULE SHUBHAM BAPUSAHEB",
+            "SHINDE SHRUTI KANTILAL",
+            "PATIL RENUKA PRASHANT",
+            "SITAPE AKSHRA BALU",
+            "MAHADIK AMARJIT SOPANKAKA"
+
         ).map { Student(it, generateAttendance()) }
     }
 
     // 2nd Year Students
     val secondYearStudents = remember {
         listOf(
-            "Swapnil Pawar", "Sayali Pawar", "Rutuja Nikam", "Pratiksha Pawar", "Snehal Pawar",
-            "Shraddha Gaikwad", "Anuja Gaikwad", "Payal Pawar", "Aarti Nikam", "Pooja Pawar", "Tejal Chavan"
+            "Swapnil Pawar",
+            "Sayali Pawar",
+            "Rutuja Nikam",
+            "Pratiksha Pawar",
+            "Snehal Pawar",
+            "Shraddha Gaikwad",
+            "Anuja Gaikwad",
+            "NARSUDE PRANJALI SUHAS",
+            "NETKE ARPITA ANANT",
+            "PAWAR SARANG SURAJ",
+            "PAWAR YASH PANDURANG",
+            "PUJARI VAIDAVI MUKIND",
+            "SALUNKE SACHIN NITIN",
+            "SARAF PRACHI SANTOSH",
+            "SATPUTE TANVI ISHWAR",
+            "SHIDE VAISHNAVI SANTOSH",
+            "SHINDE SHRIRAM DATTATRAYA",
+            "SHINDE SIDDHI SUHAS",
+            "SHINDE SOHAM PANDURANG",
+            "SHINDE TEJASWINI SATISH",
+            "Payal Pawar",
+            "Aarti Nikam",
+            "Pooja Pawar",
+            "Tejal Chavan"
+        ).map { Student(it, generateAttendance()) }
+    }
+    val thirdYearStudents = remember {
+        listOf(
+            "AGARKAR ATHARV VINAYAK",
+            "ANKUSHARAO JAY SURAJ",
+            "AWAD GAYATRI KHANDERAO",
+            "BAGWAN SHAHIDRAZA SHAFIK",
+            "BAKSHI PRIYANKA JAYSING",
+            "BHOSALE YASH HARISHCHANDRA",
+            "BOBE TUSHAR SOMNATH",
+            "CHAUTMAHAL SAMIKSHA AVINASH",
+            "CHAVAN ONKAR SAMADHAN",
+            "CHAVAN PRUTHVIRAJ ANANT",
+            "CHAVAN RUSHIKESH SANTOSH",
+            "DAKHANI S DANISH S AHEMAD",
+            "DEVANPALLI NIKHIL RATNAKAR",
+            "DHARURKAR SWARUP AJAY",
+            "DHARURKAR VAISHNAVI GANESH",
+            "DHOLE PRACHI RAMESH",
+            "DOKE ROHAN KRUSHNA",
+            "DOMBE PRATIKSHA MANOJ",
+            "FATALE RUPESH SANTOSH",
+            "FUGE TRUPTI SAUDAGAR",
+            "GADHAVE GANESH MAHADEV",
+            "GAIKWAD POURNIMA SACHIN",
+            "GARDADE ARATI MAHENDRA",
+            "GAWARE SUCHITA DNYANESHWAR",
+            "GHOLAP NAGESH JIVAN",
+            "GHOLAP VAISHNAVI GANESH",
+            "GUNJAL SANIKA BAPU",
+            "JAGADALE PRASHANT UMESH",
+            "JAGADALE SUSHANT UMESH",
+            "KAMBLE ANKITA SANTOSH",
+            "KANDE PRAJWAL POPAT",
+            "KARALE SHANTANU NAVNATH",
+            "KHATKE SOHAM SHAHAJI",
+            "KURUND RUTUJA SHAHAJI",
+            "MAINDARKAR CHAITANYA DHANANJAY",
+            "MANGIRE SHAMBHAVI CHANDAN",
+            "MANJARE SAKSHI VASANT",
+            "MAHADIK AMARJIT SOPANKAKA"
+
         ).map { Student(it, generateAttendance()) }
     }
 
@@ -65,9 +155,11 @@ fun AttendanceHistoryScreen(navController: NavController) {
         BarEntry(index.toFloat(), student.attendance[selectedMonth]?.toFloat() ?: 0f)
     }
 
-    Column(modifier = Modifier
-        .fillMaxSize()
-        .padding(16.dp)) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
 
         // Dropdown for Year
         DropdownSelector(
@@ -154,7 +246,9 @@ fun DropdownSelector(
             onValueChange = {},
             label = { Text(label) },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
-            modifier = Modifier.menuAnchor().fillMaxWidth()
+            modifier = Modifier
+                .menuAnchor()
+                .fillMaxWidth()
         )
 
         ExposedDropdownMenu(

@@ -50,14 +50,35 @@ fun AttendanceScreen(navController: NavController) {
             AttendanceStudent("Tejal Chavan")
         )
     }
+    val thirdYearStudents = remember {
+        mutableStateListOf(
+            AttendanceStudent("MOMIN AZIZA GAFFAR"),
+            AttendanceStudent("SHENDRE GAURI CHAGAN"),
+            AttendanceStudent( "DESHMUKHE RUTUJA ARVIND"),
+            AttendanceStudent("GAIKWAD ANUJA TUKARAM"),
+            AttendanceStudent("KSHIRSAGAR ANUSHKA PRASHANT"),
+            AttendanceStudent("HONRAO ARNAV SACHIN"),
+            AttendanceStudent( "DAMTE BIBIAMINA JAFAR"),
+            AttendanceStudent("GHEMAD SHRUSHTI SUDAM"),
+            AttendanceStudent(  "WAGHOLIKAR SARTHAK SANJAY"),
+            AttendanceStudent("KANGUDE NIKITA NANDKUMAR"),
+            AttendanceStudent("KHANDARE NAMRTA BALAJI")
+        )
+    }
 
     var selectedYear by remember { mutableStateOf("1st Year") }
-    val yearOptions = listOf("1st Year", "2nd Year")
+    val yearOptions = listOf("1st Year", "2nd Year","3rd Year")
 
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
 
-    val students = if (selectedYear == "1st Year") firstYearStudents else secondYearStudents
+    val students = if (selectedYear == "1st Year") {
+        firstYearStudents
+    } else if (selectedYear == "2nd Year") {
+        secondYearStudents
+    } else{
+        thirdYearStudents
+    }
 
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) }
